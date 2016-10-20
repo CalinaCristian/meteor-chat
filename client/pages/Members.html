@@ -29,8 +29,12 @@
     <thead>
       <tr>
         <th> Username </th>
-        <th> Online Only
-          <input class="toggle" type="checkbox" data-toggle="toggle" id="toggle-two" checked={{isItChecked}}>
+        <th> <span style="padding-right:5px"> Online Only </span>
+          <!-- <input class="toggle" type="checkbox" data-toggle="toggle" id="toggle-two" checked={{isItChecked}}> -->
+          <label class="mytoggle">
+            <input type="checkbox" checked={{isItChecked}}>
+            <div class="myslider round"></div>
+          </label>
         </th>
         <th> Friends </th>
       </tr>
