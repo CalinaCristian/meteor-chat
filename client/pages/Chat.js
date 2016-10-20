@@ -3,9 +3,21 @@ Session.set("global", false);
 Session.set("group", false);
 Session.set("groupId", "");
 
+Tracker.autorun(function(){
+  const group = Groups.findOne({_id: Session.get("groupId")});
+
+  if (!group && Session.get('group') && Session.get("groupId")){
+    Session.set("messageReciever", []);
+    Session.set("global", true);
+    Session.set("group", false);
+    Session.set("groupId", "");
+  }
+});
+
 Template.chat.rendered = function(){
   $("#log").css("max-height", (window.innerHeight - $("#composer").innerHeight() -
       $("#nav").innerHeight() - $(".navbar").innerHeight() - 25)+"px");
+  $("#inputMessageBox").css("max-width", $("#log").innerWidth());
   var elem = document.getElementById('log');
   if (elem){
     elem.scrollTop = elem.scrollHeight;
@@ -17,24 +29,26 @@ Meteor.startup(function() {
   $(window).resize(function(evt){
     $("#log").css("max-height", (window.innerHeight - $("#composer").innerHeight() -
         $("#nav").innerHeight() - $(".navbar").innerHeight() - 25)+"px");
-  var elem = document.getElementById('log');
-   if (elem){
-     elem.scrollTop = elem.scrollHeight;
-   }
+    $("#inputMessageBox").css("max-width", $("#log").innerWidth());
+    var elem = document.getElementById('log');
+     if (elem){
+       elem.scrollTop = elem.scrollHeight;
+     }
  })
 });
 
 Template.chat.onCreated (function(){
-    $('html, body').css({
-    'background':'none',
-    'background-color':'#E0E0E0'
+  $('html, body').css({
+  'background':'none',
+  'background-color':'#E0E0E0'
   })
   $("#log").css("max-height", (window.innerHeight - $("#composer").innerHeight() -
-      $("#nav").innerHeight() - $(".navbar").innerHeight() - 25)+"px");
-   var elem = document.getElementById('log');
-   if (elem){
-     elem.scrollTop = elem.scrollHeight;
-   }
+    $("#nav").innerHeight() - $(".navbar").innerHeight() - 25)+"px");
+  $("#inputMessageBox").css("max-width", $("#log").innerWidth());
+  var elem = document.getElementById('log');
+  if (elem){
+    elem.scrollTop = elem.scrollHeight;
+  }
 });
 
 Template.chat.helpers({
@@ -52,24 +66,24 @@ Template.chat.helpers({
       return "hidden";
     }
   },
-  lastMessage: function() {
-      if (Meteor.userId() && Messages.find({}, {sort: {time: -1}, limit: 1}).fetch()[0]) {
-        var elem = document.getElementById('log');
-        if (elem){
-          elem.scrollTop = elem.scrollHeight;
-        }
-        if ( Session.get("lastMessage") !== Messages.find({}, {sort: {time: -1}, limit: 1}).fetch()[0].message){
-          // lastMessage.update({_id: lastMessage.findOne({name: 'mesj'})._id},{$set:{'text': Messages.find({}, {sort: {time: -1}, limit: 1}).fetch()[0].message}});
-          Session.setAuth("lastMessage", Messages.find({}, {sort: {time: -1}, limit: 1}).fetch()[0].message);
-          Session.setAuth("lastName", Messages.find({}, {sort: {time: -1}, limit: 1}).fetch()[0].name);
-        }
-      }
-    }
+  // lastMessage: function() {
+  //     if (Meteor.userId() && Messages.find({}, {sort: {time: -1}, limit: 1}).fetch()[0]) {
+  //       var elem = document.getElementById('log');
+  //       if (elem){
+  //         elem.scrollTop = elem.scrollHeight;
+  //       }
+  //       if ( Session.get("lastMessage") !== Messages.find({}, {sort: {time: -1}, limit: 1}).fetch()[0].message){
+  //         // lastMessage.update({_id: lastMessage.findOne({name: 'mesj'})._id},{$set:{'text': Messages.find({}, {sort: {time: -1}, limit: 1}).fetch()[0].message}});
+  //         Session.setAuth("lastMessage", Messages.find({}, {sort: {time: -1}, limit: 1}).fetch()[0].message);
+  //         Session.setAuth("lastName", Messages.find({}, {sort: {time: -1}, limit: 1}).fetch()[0].name);
+  //       }
+  //     }
+  //   }
 })
 
 Template.messages.helpers({
   messages: function() {
-    return Messages.find({}, { sort: { time: 1}});
+    return this;
   }
 });
 
@@ -94,7 +108,7 @@ Template.msj.helpers({
       }
     }
     else{
-      if ((this.group == false) && (other.length==0) && 
+      if ((this.group == false) && (other.length==0) &&
         (this.sender == undefined || this.reciever.length == 0)){
         return this;
       }
@@ -108,6 +122,9 @@ Template.msj.helpers({
   },
   myColorChat: function(msj){
     return Meteor.users.findOne({_id: msj.sender}).color;
+  },
+  systemMessage: function(){
+    return (this.name==="System");
   }
 })
 
@@ -123,12 +140,20 @@ Template.users.helpers({
     return (this._id === Meteor.userId());
   },
   notInMyGroup: function(){
-    if (Groups.findOne({owner: Meteor.userId()})){
-      return (Groups.findOne({owner: Meteor.userId()}).users.indexOf(this._id) == -1);
+    const group = Groups.findOne({owner: Meteor.userId()});
+
+    if (group){
+      return (group.users.indexOf(this._id) == -1);
     }
     else {
       return false;
     }
+  },
+  getUsername: function(){
+    if (this.username.length > 8) {
+      return this.username.substring(0, 8) + "..";
+    }
+    return this.username;
   }
 })
 
@@ -137,12 +162,14 @@ Template.users.events({
     e.preventDefault();
     Session.set("global",false);
     Session.set("group", false);
+    Session.set("groupId", "");
     Session.set("messageReciever", [this._id]);
   },
   'click #startGChat': function(e){
     e.preventDefault();
     Session.set("messageReciever", []);
     Session.set("global", true);
+    Session.set("groupId", "");
     Session.set("group", false);
   },
   'click #addGroup': function(e){
@@ -179,6 +206,12 @@ Template.groups.helpers({
     return (!Groups.findOne({owner: Meteor.userId()}));
   },
   'name' : function(){
+    if (this.name.length > 8)  {
+      return this.name.substring(0, 8) + ".."
+    }
+    return this.name;
+  },
+  'realName': function(){
     return this.name;
   }
 });
@@ -223,29 +256,53 @@ Template.groups.events({
     Session.set("global", false);
     Session.set("group", true);
     Session.set("groupId", this._id);
+  },
+  'click #leaveGroupChat': function(e){
+    e.preventDefault();
+    const groupName = this.name;
+
+    Meteor.call("leaveGroup", this._id, function(err){
+      if (err){
+        if (err.reason){
+          toastr.error(err.reason, "ERROR");
+        }
+        else {
+          toastr.error("Internal Server Error!", "ERROR");
+        }
+      } else {
+        Session.set("messageReciever", []);
+        Session.set("global", true);
+        Session.set("group", false);
+        Session.set("groupId", "");
+
+        toastr.info("Ati parasit grupul " + groupName + ".", "SUCCESS");
+      }
+    })
   }
 });
 
 Template.input.events ({
   'keydown input#message' : function (event) {
     if (event.which == 13) { // 13 is the enter key event
-    	if (Meteor.user()){
-        var name = Meteor.user().username;
-      }
-      else{
+      if (!Meteor.user()){
       	toastr.error("Nu sunteti autentificat.","ERROR!");
       	document.getElementById('message').value = '';
       }
       var message = document.getElementById('message');
+
       if (message.value != '') {
-        Messages.insert({
-          name: name,
-          message: message.value,
-          time: Date.now(),
-          sender: Meteor.userId(),
-          reciever: Session.get("messageReciever"),
-          group: Session.get("group"),
-          groupId: (Session.get("group")==true) ? Session.get("groupId") : ""
+
+        Meteor.call("insertMessage", message.value, Session.get("messageReciever"),
+          Session.get("group"), (Session.get("group")==true) ? Session.get("groupId") : "", function(err){
+
+          if (err){
+            if (err.reason){
+              toastr.error(err.reason, "ERROR");
+            }
+            else {
+              toastr.error("Internal Server Error!", "ERROR");
+            }
+          }
         });
       }
       var elem = document.getElementById('log');
@@ -267,8 +324,8 @@ Template.input.helpers({
       else {
         var forUsers = Meteor.users.findOne({_id: Session.get("messageReciever")[0]});
       }
-      
-      return forUsers ? forUsers.username : 
+
+      return forUsers ? forUsers.username :
       (Session.get("global") == true) ? "Global" :
       forGroupsUsers ? forGroupsUsers.name : ""
     }

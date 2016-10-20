@@ -32,5 +32,43 @@ Meteor.methods({
 				users: usersArray
 			}
 		})
+
+		const user = Meteor.users.findOne({_id: doc._id}).username;
+
+		Messages.insert({
+      name: "System",
+      time: Date.now(),
+      sender: Meteor.userId(),
+      message: "User " + user.toUpperCase() + " has been added to the group.",
+      reciever: group.users,
+      group: true,
+      groupId: group._id
+    });
+	},
+	leaveGroup: function(id){
+		if (!Groups.findOne({_id: id})) {
+			throw new Meteor.Error(502, 'Grupul pe care doriti sa-l parasiti nu exista.');
+		}
+		var group = Groups.findOne({_id: id});
+		var usersArray = group.users;
+		usersArray.splice(usersArray.indexOf(Meteor.userId()), 1);
+
+		Groups.update({_id: id}, {
+			$set: {
+				users: usersArray
+			}
+		})
+
+		const user = Meteor.user().username;
+
+		Messages.insert({
+      name: "System",
+      time: Date.now(),
+      sender: Meteor.userId(),
+      message: "User " + user.toUpperCase() + " has left the group.",
+      reciever: group.users,
+      group: true,
+      groupId: group._id
+    });
 	}
 });
