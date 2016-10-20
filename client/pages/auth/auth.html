@@ -1,0 +1,20 @@
+<template name="auth">
+	{{> user_info}}
+</template>
+
+<template name="user_info">
+	{{#if currentUser}}
+		{{> user_loggedIn}}
+	{{/if}}
+</template>
+
+<template name="user_loggedIn">
+	{{#if loggingIn}}
+		<a> Logging in...</a>
+	{{else}}
+		<a class="login">
+			<span style="color:{{getColor currentUser}}" class="glyphicon glyphicon-user"> </span> 
+			<strong style="color:{{getColor currentUser}}" id="mycolor"> {{currentUser.username}} </strong>
+		</a>
+	{{/if}}
+</template>

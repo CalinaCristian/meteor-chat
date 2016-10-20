@@ -1,0 +1,27 @@
+<template name="register">
+  {{> nav}}
+    <form class="register-form" id="valid" style="width: 300px;margin: 0 auto; margin-top:10%">
+      <div class="form-group">
+        <label for="register-email">Email address: </label>
+        <input type="email" class="form-control required email" id="register-email" name="email">
+      </div>
+
+      <div class="form-group">
+        <label for="register-username">Username: </label>
+        <input type="text" class="form-control required" id="register-username" name="username">
+      </div>
+
+      <div class="form-group">
+        <label for="register-password">Password:</label>
+        <input type="password" class="form-control required" id="register-password" name="password">
+      </div>
+
+      <div class="form-group">
+        <label for="register-passwordConf">Confirm Password:</label>
+        <input type="password" class="form-control required" id="register-passwordConf" name="passwordConf">
+      </div>
+
+      <input type="submit" value="Submit">
+      <input type="button" class="MyLogin pull-right" value="Login">
+    </form>
+</template>

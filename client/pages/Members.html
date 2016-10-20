@@ -1,0 +1,128 @@
+<template name="members">
+  {{>nav}}
+  {{#unless currentUser}}
+    <div class="alert alert-warning">
+      <strong>Warning!</strong> You need to be signed in to view members!
+    </div>
+    {{else}}
+    <div class="alert alert-info">
+    {{#if atLeastOne}}
+      {{#if atLeastOneOnline}}
+        There are currently <strong>{{number}}</strong> accounts created on this website
+        (<strong>{{numberOnline}}</strong> online).
+      {{else}}
+        There are currently <strong>{{number}}</strong> accounts created on this website
+        (No one is online!).
+      {{/if}}
+      {{else}}
+        This website has no users created :(.
+      {{/if}}
+    </div>
+    {{#if atLeastOne}}
+      {{> displayUsers}}
+    {{/if}}
+  {{/unless}}
+</template>
+
+<template name="displayUsers">
+  <table class="table table-hover">
+    <thead>
+      <tr>
+        <th> Username </th>
+        <th> Online Only
+          <input class="toggle" type="checkbox" data-toggle="toggle" id="toggle-two" checked={{isItChecked}}>
+        </th>
+        <th> Friends </th>
+      </tr>
+    </thead>
+
+    <tbody>
+    {{#if user}}
+      {{#each user}}
+        {{#if online}}
+          <tr class="warning">
+            <td class="col-md-3" style="color:blue">
+             <span style="color:{{getColor this}}" class="glyphicon glyphicon-user"></span>
+             <strong style="color:{{getColor this}}"> {{username}}</strong> </td>
+            <td class="col-md-3"> <strong style="color:green"> Online </strong> </td>
+            {{#if friend}}
+              <td class="col-md-3">
+              <button type="button" id="remove" data-id={{theId}}>Remove Friend</button>
+              </td>
+            {{else}}
+            {{#if friendRequest}}
+              <td class="col-md-3">
+                <button type="button" id="accept" data-id={{theId}}>Accept Request</button>
+                <button type="button" id="decline" data-id={{theId}}>Decline Request</button>
+              </td>
+            {{else}}
+            {{#if friendPending}}
+              <td class="col-md-3">
+                <button type="button" id="cancel" data-id={{theId}} >Cancel Request</button>
+                <!-- <span> Pending... </span> -->
+              </td>
+            {{else}}
+            {{#if me}}
+              <td class="col-md-3">
+                Me
+              </td>
+            {{else}}
+              <td class="col-md-3">
+                <button type="button" id="add" data-id={{theId}}>Add to friends</button>
+              </td>
+            {{/if}}
+            {{/if}}
+            {{/if}}
+            {{/if}}
+          </tr>
+        {{/if}}
+      {{/each}}
+
+      {{#if notOnlineOnly}}
+      {{#each user}}
+        {{#if offline}}
+        <tr class="warning">
+            <td class="col-md-3" style="color:blue">
+            <span style="color:{{getColor this}}" class="glyphicon glyphicon-user"></span>
+            <strong style="color:{{getColor this}}"> {{username}}</strong> </td>
+            <td class="col-md-3"> <strong style="color:red"> Offline </strong> </td>
+            {{#if friend}}
+              <td class="col-md-3">
+                <button type="button" id="remove">Remove Friend</button>
+              </td>
+            {{else}}
+            {{#if friendRequest}}
+              <td class="col-md-3">
+                <button type="button" id="accept">Accept Request</button>
+                <button type="button" id="decline">Decline Request</button>
+              </td>
+            {{else}}
+            {{#if friendPending}}
+              <td class="col-md-3">
+                <button type="button" id="cancel">Cancel Request</button>
+              </td>
+            {{else}}
+              <td class="col-md-3">
+                <button type="button" id="add" data-id={{theId}}>Add to friends</button>
+              </td>
+            {{/if}}
+            {{/if}}
+            {{/if}}
+          </tr>
+        {{/if}}
+      {{/each}}
+      {{/if}}
+    {{/if}}
+
+    {{#if checkAnyOnline}}
+    {{#if OnlineOnly}}
+      <tr class="danger">
+      <td class="col-md-3"></td>
+      <td class="col-md-3" style="text-align:center;color:red"><strong>No one is online !</strong></td>
+      <td class="col-md-3"></td>
+      </tr>
+    {{/if}}
+    {{/if}}
+    </tbody>
+  </table>
+</template>

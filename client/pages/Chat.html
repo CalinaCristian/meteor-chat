@@ -1,0 +1,93 @@
+<template name="chat">
+  {{>nav}}
+  {{#if notloggedIn}}
+  <div class="alert alert-warning">
+    <strong>Warning!</strong> You need to be signed in to access chat!
+  </div>
+  {{/if}}
+	 <div id="sidebar" style="visibility:{{displayType}}">
+		  <p style="color:#660066"> <strong>Online Friends:</strong> </p>
+		  {{> users}}
+      <p style="color:#660066"> <strong>Your Groups:</strong> </p>
+      {{> groups}}
+   </div>
+   <div id="primary" style="visibility:{{displayType}}">
+   	  <div id="log" > {{>messages}} </div>
+      <div id="composer">{{>input}}</div>
+	 </div>
+  {{lastMessage}}
+  {{changeTitle}}
+
+</template>
+
+<template name="users">
+	{{#each users}}
+    {{#if itsme}}
+      <p>
+      <span style="color:{{getColor this}}" class="glyphicon glyphicon-user"></span>
+      <strong style="color:{{getColor this}}"> Me </strong>
+      <button type="button" id="startGChat" class="btn btn-default btn-xs"> Global </button>
+      </p>
+    {{/if}}
+  {{/each}}
+  {{#each users}}
+    {{#if userIsFriend}}
+      <p>
+      <span style="color:{{getColor this}}" class="glyphicon glyphicon-user"></span>
+      <strong style="color:{{getColor this}}"> {{username}} </strong>
+      <button type="button" id="startChat" class="btn btn-default btn-xs"> Chat </button>
+      {{#if notInMyGroup}}
+      <button type="button" id="addGroup" class="btn btn-default btn-xs"> Group </button>
+      {{/if}}
+      </p>
+    {{/if}}
+	{{/each}}
+</template>
+
+<template name="groups">
+  {{#each group}}
+    {{#if ownerOfGroup}}
+      <p>
+      <span style="color:red" class="glyphicon glyphicon-subtitles"></span>
+      <strong style="color:red"> {{name}} </strong>
+      <button type="button" id="startGroupChat" class="btn btn-default btn-xs"> Chat </button>
+      <button type="button" id="deleteGroup" class="btn btn-danger btn-xs"> Delete </button>
+      </p>
+    {{/if}}
+  {{/each}}
+  {{#each group}}
+    {{#if userInGroup}}
+      <p>
+      <span style="color:black" class="glyphicon glyphicon-subtitles"></span>
+      <strong> {{name}} </strong>
+      <button type="button" id="startGroupChat" class="btn btn-default btn-xs"> Chat </button>
+      </p>
+    {{/if}}
+  {{/each}}
+  {{#if notOwnsGroup}}
+    <form class="createGroup">
+      <input type="text" required class="form-control" id="newGroup" name="newGroup" placeholder="Create group..">
+      <input type="submit" id="addGroup" class="btn-default" value="Submit">
+    </form>
+  {{/if}}
+</template>
+
+<template name="messages">
+  {{#each messages}}
+    {{>msj}}
+  {{/each}}
+</template>
+
+<template name="input">
+  <p>Message({{toWhom}}): <input style="width:60%;" type="text" id="message"></p>
+</template>
+
+<template name="msj">
+  {{#if filterThem}}
+  	<span class="text">
+    <span style="font-size:xx-small"> {{formatDate time "DD.MM.YY"}} </span>
+    <span style="font-size:x-small"> <strong>{{formatDate time "HH:mm"}} </strong>  </span>
+    <span style="color:{{myColorChat this}}" class="glyphicon glyphicon-user"> </span>
+    <strong style="color:{{myColorChat this}}"> {{name}}:</strong> {{message}} <br></span>
+  {{/if}}
+</template>
