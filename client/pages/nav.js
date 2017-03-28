@@ -13,12 +13,7 @@ Template.nav.events({
   },
   'click #logout': function(e){
     e.preventDefault();
-    var user = Meteor.user().username;
-    Meteor.logout();
-    toastr.info("Utilizatorul " + user + " a fost delogat cu succes !", "SUCCESS");
-    setTimeout(function(){
-      Router.go('/login');
-    },1000);
-    
+    Router.go('/logout');
+
   }
 });
