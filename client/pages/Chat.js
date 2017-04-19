@@ -14,27 +14,47 @@ Tracker.autorun(function(){
   }
 });
 
-Template.chat.rendered = function(){
+function scrollDown() {
   $("#log").css("max-height", (window.innerHeight - $("#composer").innerHeight() -
       $("#nav").innerHeight() - $(".navbar").innerHeight() - 25)+"px");
   $("#inputMessageBox").css("max-width", $("#log").innerWidth());
+
   var elem = document.getElementById('log');
+
   if (elem){
     elem.scrollTop = elem.scrollHeight;
   }
+}
+
+Template.chat.rendered = function(){
+  scrollDown();
   Session.set("global", true);
+
+  Tracker.autorun(function(){
+    if (Messages.findOne()) {
+
+      const lastMessage = Messages.find({}, {sort: {time: -1}, limit: 1}).fetch()[0];
+
+      if (Session.get("global") && lastMessage.reciever.length === 0) {
+        scrollDown();
+      }
+      else if (Session.get("group") && lastMessage.group && Session.get("groupId") === lastMessage.groupId) {
+        scrollDown();
+      }
+      else if (!Session.get("global") && !Session.get('group') && !lastMessage.group && !lastMessage.groupId &&
+        (((lastMessage.reciever[0] === Session.get("messageReciever")[0]) && (lastMessage.sender === Meteor.userId())) ||
+        ((lastMessage.reciever[0] === Meteor.userId()) && (lastMessage.sender === Session.get("messageReciever")[0])))
+      ) {
+        scrollDown();
+      }
+    }
+  });
 }
 
 Meteor.startup(function() {
   $(window).resize(function(evt){
-    $("#log").css("max-height", (window.innerHeight - $("#composer").innerHeight() -
-        $("#nav").innerHeight() - $(".navbar").innerHeight() - 25)+"px");
-    $("#inputMessageBox").css("max-width", $("#log").innerWidth());
-    var elem = document.getElementById('log');
-     if (elem){
-       elem.scrollTop = elem.scrollHeight;
-     }
- })
+    scrollDown();
+  })
 });
 
 Template.chat.onCreated (function(){
@@ -42,13 +62,6 @@ Template.chat.onCreated (function(){
   'background':'none',
   'background-color':'#E0E0E0'
   })
-  $("#log").css("max-height", (window.innerHeight - $("#composer").innerHeight() -
-    $("#nav").innerHeight() - $(".navbar").innerHeight() - 25)+"px");
-  $("#inputMessageBox").css("max-width", $("#log").innerWidth());
-  var elem = document.getElementById('log');
-  if (elem){
-    elem.scrollTop = elem.scrollHeight;
-  }
 });
 
 Template.chat.helpers({
@@ -151,6 +164,8 @@ Template.users.events({
     Session.set("group", false);
     Session.set("groupId", "");
     Session.set("messageReciever", [this._id]);
+
+    setTimeout(scrollDown, 100);
   },
   'click #startGChat': function(e){
     e.preventDefault();
@@ -158,6 +173,8 @@ Template.users.events({
     Session.set("global", true);
     Session.set("groupId", "");
     Session.set("group", false);
+
+    setTimeout(scrollDown, 100);
   },
   'click #addGroup': function(e){
     e.preventDefault();
@@ -243,6 +260,8 @@ Template.groups.events({
     Session.set("global", false);
     Session.set("group", true);
     Session.set("groupId", this._id);
+
+    setTimeout(scrollDown, 100);
   },
   'click #leaveGroupChat': function(e){
     e.preventDefault();
@@ -263,6 +282,8 @@ Template.groups.events({
         Session.set("groupId", "");
 
         toastr.info("Ati parasit grupul " + groupName + ".", "SUCCESS");
+
+        setTimeout(scrollDown, 100);
       }
     })
   }
@@ -291,10 +312,6 @@ Template.input.events ({
             }
           }
         });
-      }
-      var elem = document.getElementById('log');
-      if (elem){
-        elem.scrollTop = elem.scrollHeight;
       }
       document.getElementById('message').value = '';
       message.value = '';

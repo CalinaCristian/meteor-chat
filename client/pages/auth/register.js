@@ -70,12 +70,10 @@ Template.register.events({
           color += letters[Math.floor(Math.random() * 16)];
       }
       Accounts.createUser({
-        email: email,
-        username: username,
-        password : password,
-        color: color,
-        group: [],
-        friends: []
+        email,
+        username,
+        password,
+        color
       }, function(err){
         if (err){
           if (err.reason){

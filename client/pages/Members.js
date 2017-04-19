@@ -1,5 +1,4 @@
- Session.set("online",true);
-Session.set("buttonFor", "");
+Session.set("online",true);
 
 Template.members.onCreated( function(){
 	$('html, body').css({
@@ -104,8 +103,8 @@ Template.displayUsers.helpers({
 });
 
 var DateFormats = {
-       short: "DD MMMM - YYYY",
-       long: "dddd DD.MM.YYYY HH:mm"
+ 	short: "DD MMMM - YYYY",
+ 	long: "dddd DD.MM.YYYY HH:mm"
 };
 
 

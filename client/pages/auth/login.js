@@ -35,7 +35,7 @@ Template.login.events({
 
     Meteor.loginWithFacebook({requestPermissions: ['public_profile', 'email', 'user_friends']}, function(err){
       if (err) {
-        console.log('Handle errors here: ', err);
+        console.log('The following error occured while signing in with facebook: ', err);
       }
     });
   },
