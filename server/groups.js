@@ -44,6 +44,8 @@ Meteor.methods({
 			 group: true,
 			 groupId: group._id
 		});
+
+		return doc._id
 	},
 	leaveGroup: function(id){
 		if (!Groups.findOne({_id: id})) {

@@ -2,6 +2,7 @@ Session.set("messageReciever", []);
 Session.set("global", false);
 Session.set("group", false);
 Session.set("groupId", "");
+Session.set("lastMessageId", "");
 
 Tracker.autorun(function(){
   const group = Groups.findOne({_id: Session.get("groupId")});
@@ -34,18 +35,41 @@ Template.chat.rendered = function(){
     if (Messages.findOne()) {
 
       const lastMessage = Messages.find({}, {sort: {time: -1}, limit: 1}).fetch()[0];
+      if (Session.get("lastMessageId") !== lastMessage._id) {
+        const prevId = Session.get("lastMessageId");
 
-      if (Session.get("global") && lastMessage.reciever.length === 0) {
-        scrollDown();
-      }
-      else if (Session.get("group") && lastMessage.group && Session.get("groupId") === lastMessage.groupId) {
-        scrollDown();
-      }
-      else if (!Session.get("global") && !Session.get('group') && !lastMessage.group && !lastMessage.groupId &&
-        (((lastMessage.reciever[0] === Session.get("messageReciever")[0]) && (lastMessage.sender === Meteor.userId())) ||
-        ((lastMessage.reciever[0] === Meteor.userId()) && (lastMessage.sender === Session.get("messageReciever")[0])))
-      ) {
-        scrollDown();
+        Session.set("lastMessageId", lastMessage._id);
+
+        if (Session.get("global") && lastMessage.reciever.length === 0) {
+          scrollDown();
+        }
+        else if (Session.get("group") && lastMessage.group && Session.get("groupId") === lastMessage.groupId) {
+          scrollDown();
+        }
+        else if (!Session.get("global") && !Session.get('group') && !lastMessage.group && !lastMessage.groupId &&
+          (((lastMessage.reciever[0] === Session.get("messageReciever")[0]) && (lastMessage.sender === Meteor.userId())) ||
+          ((lastMessage.reciever[0] === Meteor.userId()) && (lastMessage.sender === Session.get("messageReciever")[0])))
+        ) {
+          scrollDown();
+        }
+        else if (prevId !== "") {
+          if (lastMessage.reciever.length === 0) {
+            const username = Meteor.users.findOne({_id: lastMessage.sender}).username;
+
+            toastr.info(`${username}: ${lastMessage.message}`, "From Global Chat");
+          }
+          else if (lastMessage.group && lastMessage.groupId) {
+            const name = Groups.findOne({_id: lastMessage.groupId}).name;
+            const username = Meteor.users.findOne({_id: lastMessage.sender}).username;
+
+            toastr.info(`${username}: ${lastMessage.message}`, `From Group "${name}"`);
+          }
+          else if (!lastMessage.group && !lastMessage.groupId && (lastMessage.reciever[0] === Meteor.userId())) {
+            const username = Meteor.users.findOne({_id: lastMessage.sender}).username;
+
+            toastr.info(lastMessage.message, `From "${username}"`);
+          }
+        }
       }
     }
   });
@@ -179,7 +203,7 @@ Template.users.events({
   'click #addGroup': function(e){
     e.preventDefault();
     var name = this.username;
-    Meteor.call("addUserToMyGroup", this, function(err){
+    Meteor.call("addUserToMyGroup", this, function(err, result){
       if (err){
         if (err.reason){
           toastr.error(err.reason, "ERROR");
@@ -188,6 +212,11 @@ Template.users.events({
           toastr.error("Internal Server Error!", "ERROR");
         }
       } else {
+        let receivers = Session.get("messageReciever");
+        receivers.push(result);
+
+        Session.set("messageReciever", receivers);
+
         toastr.info("Utilizatorul " + name + " a fost adaugat in grupul " +
           Groups.findOne({owner: Meteor.userId()}).name, "SUCCESS");
       }
@@ -321,7 +350,6 @@ Template.input.events ({
 
 Template.input.helpers({
     'toWhom': function(){
-      messageRecieverArray = Session.get("messageReciever");
       if (Session.get("group") == true){
         var forGroupsUsers = Groups.findOne({_id: Session.get("groupId")});
       }
