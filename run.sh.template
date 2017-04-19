@@ -1,0 +1,1 @@
+MONGO_URL="mongodb://<user>:<pass>@ds063186.mlab.com:63186/heroku_z3f3xf15" meteor run

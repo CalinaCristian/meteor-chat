@@ -45,7 +45,7 @@ Template.register.rendered = function(){
 };
 
 Template.register.events({
-  'click .MyLogin': function(){
+  'click #MyLogin': function(){
     Router.go('/login');
   },
   'submit .register-form' : function(e, t){
@@ -70,7 +70,7 @@ Template.register.events({
           color += letters[Math.floor(Math.random() * 16)];
       }
       Accounts.createUser({
-        email: email, 
+        email: email,
         username: username,
         password : password,
         color: color,
@@ -91,6 +91,6 @@ Template.register.events({
       });
     }
 
-    return false; 
+    return false;
   }
 });

@@ -27,16 +27,25 @@ Template.login.rendered = function(){
 };
 
 Template.login.events({
-	'click .MyRegister': function(){
+	'click #MyRegister': function(){
 		Router.go('/register');
 	},
+  'click #FacebookLogin': function(e){
+    e.preventDefault();
+
+    Meteor.loginWithFacebook({requestPermissions: ['public_profile', 'email', 'user_friends']}, function(err){
+      if (err) {
+        console.log('Handle errors here: ', err);
+      }
+    });
+  },
 	'submit .login-form' : function(e, t){
     e.preventDefault();
     // retrieve the input field values
     var password = t.find('#login-password').value
       , usernameOrEmail = t.find('#login-usernameOrEmail').value
 
-      // Trim and validate your fields here.... 
+      // Trim and validate your fields here....
 
       // If validation passes, supply the appropriate fields to the
       // Meteor.loginWithPassword() function.
@@ -50,11 +59,11 @@ Template.login.events({
 	      	}
 	      }
 	      else{
-	      	toastr.info("Utilizatorul " + Meteor.user().username + 
+	      	toastr.info("Utilizatorul " + Meteor.user().username +
 	      		" a fost autentificat cu succes !", "SUCCESS" );
 	        Router.go('/');
 	      }
 	    });
-      return false; 
+      return false;
     }
 });

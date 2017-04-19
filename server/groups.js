@@ -36,14 +36,14 @@ Meteor.methods({
 		const user = Meteor.users.findOne({_id: doc._id}).username;
 
 		Messages.insert({
-      name: "System",
-      time: Date.now(),
-      sender: Meteor.userId(),
-      message: "User " + user.toUpperCase() + " has been added to the group.",
-      reciever: group.users,
-      group: true,
-      groupId: group._id
-    });
+			 name: "System",
+			 time: Date.now(),
+			 sender: Meteor.userId(),
+			 message: "User " + user.toUpperCase() + " has been added to the group.",
+			 reciever: group.users,
+			 group: true,
+			 groupId: group._id
+		});
 	},
 	leaveGroup: function(id){
 		if (!Groups.findOne({_id: id})) {
