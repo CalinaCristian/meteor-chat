@@ -51,18 +51,18 @@
             <td class="col-md-3"> <strong style="color:green"> Online </strong> </td>
             {{#if friend}}
               <td class="col-md-3">
-              <button type="button" id="remove" data-id={{theId}}>Remove Friend</button>
+              <button type="button" class="btn btn-default" id="remove" data-id={{theId}}>Remove Friend</button>
               </td>
             {{else}}
             {{#if friendRequest}}
               <td class="col-md-3">
-                <button type="button" id="accept" data-id={{theId}}>Accept Request</button>
-                <button type="button" id="decline" data-id={{theId}}>Decline Request</button>
+                <button type="button" class="btn btn-default" id="accept" data-id={{theId}}>Accept Request</button>
+                <button type="button" class="btn btn-default" id="decline" data-id={{theId}}>Decline Request</button>
               </td>
             {{else}}
             {{#if friendPending}}
               <td class="col-md-3">
-                <button type="button" id="cancel" data-id={{theId}} >Cancel Request</button>
+                <button type="button" class="btn btn-default" id="cancel" data-id={{theId}} >Cancel Request</button>
                 <!-- <span> Pending... </span> -->
               </td>
             {{else}}
@@ -72,7 +72,7 @@
               </td>
             {{else}}
               <td class="col-md-3">
-                <button type="button" id="add" data-id={{theId}}>Add to friends</button>
+                <button type="button" class="btn btn-default" id="add" data-id={{theId}}>Add to friends</button>
               </td>
             {{/if}}
             {{/if}}
@@ -92,22 +92,22 @@
             <td class="col-md-3"> <strong style="color:red"> Offline </strong> </td>
             {{#if friend}}
               <td class="col-md-3">
-                <button type="button" id="remove">Remove Friend</button>
+                <button type="button" class="btn btn-default" id="remove">Remove Friend</button>
               </td>
             {{else}}
             {{#if friendRequest}}
               <td class="col-md-3">
-                <button type="button" id="accept">Accept Request</button>
-                <button type="button" id="decline">Decline Request</button>
+                <button type="button" class="btn btn-default" id="accept">Accept Request</button>
+                <button type="button" class="btn btn-default" id="decline">Decline Request</button>
               </td>
             {{else}}
             {{#if friendPending}}
               <td class="col-md-3">
-                <button type="button" id="cancel">Cancel Request</button>
+                <button type="button" class="btn btn-default" id="cancel">Cancel Request</button>
               </td>
             {{else}}
               <td class="col-md-3">
-                <button type="button" id="add" data-id={{theId}}>Add to friends</button>
+                <button type="button" class="btn btn-default" id="add" data-id={{theId}}>Add to friends</button>
               </td>
             {{/if}}
             {{/if}}
