@@ -1,4 +1,4 @@
-Session.set("online",true);
+ Session.set("online",true);
 Session.set("buttonFor", "");
 
 Template.members.onCreated( function(){

@@ -65,6 +65,13 @@ Accounts.onCreateUser(function(options, user) {
   if (options.color){
     user.color = options.color;
   }
+  user.friends = [];
+  user.friendsRequests = [];
+  user.friendsAwaiting = [];
+  user.groups = [];
+  user.groupsRequests = [];
+  user.groupsAwaiting = [];
+
   if (user.services.facebook) {
     var letters = '0123456789ABCDEF'.split('');
     var color = '#';
@@ -76,13 +83,18 @@ Accounts.onCreateUser(function(options, user) {
     user.color = color;
     user.username = user.services.facebook.name;
     user.emails = [{address: user.services.facebook.email}];
+
+    new Promise((resolve, reject) => {
+      Meteor.call('setFacebookFriends', user, (err, res) => {
+        if (err)
+          reject(err);
+        else
+          resolve(res);
+      });
+    }).then((res) => {
+      return user;
+    });
   }
-  user.friends = [];
-  user.friendsRequests = [];
-  user.friendsAwaiting = [];
-  user.groups = [];
-  user.groupsRequests = [];
-  user.groupsAwaiting = [];
 
   return user;
 });

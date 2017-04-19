@@ -1,4 +1,45 @@
 Meteor.methods({
+	setFacebookFriends: function(user) {
+		FBGraph.setAccessToken(user.services.facebook.accessToken);
+
+    new Promise((resolve, reject) => {
+    	FBGraph.get('/me/friends', function(err, res) {
+		    if (err) {
+		      reject(err);
+		    }
+		    else {
+		    	var ids = res.data.map((friend) => friend.id);
+
+		    	resolve(ids);
+		    }
+		  })
+		}).then((res) => {
+			const usersWithId = Meteor.users.find({"services.facebook.id": {$in: res}}).fetch();
+
+			usersWithId.map((friend) => {
+				if ((user.friends.indexOf(friend._id) < 0) && (friend.friends.indexOf(user._id) < 0)) {
+
+					var myFriends = user.friends;
+					var hisFriends = friend.friends;
+
+					myFriends.push(friend._id);
+					hisFriends.push(user._id);
+
+					Meteor.users.update({_id: user._id}, {
+						$set: {
+							friends: myFriends
+						}
+					});
+
+					Meteor.users.update({_id: friend._id}, {
+						$set: {
+							friends: hisFriends
+						}
+					});
+				}
+			})
+		});
+	},
 	addUserToFriends: function(added, adder){
 		var addedUserRequests = Meteor.users.findOne({_id: added}).friendsRequests;
 		var adderUserPendings = Meteor.users.findOne({_id: adder}).friendsAwaiting;

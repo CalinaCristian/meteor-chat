@@ -65,20 +65,7 @@ Template.chat.helpers({
     else {
       return "hidden";
     }
-  },
-  // lastMessage: function() {
-  //     if (Meteor.userId() && Messages.find({}, {sort: {time: -1}, limit: 1}).fetch()[0]) {
-  //       var elem = document.getElementById('log');
-  //       if (elem){
-  //         elem.scrollTop = elem.scrollHeight;
-  //       }
-  //       if ( Session.get("lastMessage") !== Messages.find({}, {sort: {time: -1}, limit: 1}).fetch()[0].message){
-  //         // lastMessage.update({_id: lastMessage.findOne({name: 'mesj'})._id},{$set:{'text': Messages.find({}, {sort: {time: -1}, limit: 1}).fetch()[0].message}});
-  //         Session.setAuth("lastMessage", Messages.find({}, {sort: {time: -1}, limit: 1}).fetch()[0].message);
-  //         Session.setAuth("lastName", Messages.find({}, {sort: {time: -1}, limit: 1}).fetch()[0].name);
-  //       }
-  //     }
-  //   }
+  }
 })
 
 Template.messages.helpers({
