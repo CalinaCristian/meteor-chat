@@ -5,7 +5,7 @@
     <strong>Warning!</strong> You need to be signed in to access chat!
   </div>
   {{/if}}
-	 <div id="sidebar" style="visibility:{{displayType}}">
+	 <div id="sidebar" style="display: {{checkDisplaySidebar}};">
 		  <p style="color:#660066; text-align: center;"> <strong>Online Friends:</strong> </p>
       <div id="usersDisplay">
   		  {{> onlineUsers}}
@@ -19,8 +19,20 @@
         {{> groups}}
       </div>
    </div>
-   <div id="primary" style="visibility:{{displayType}}">
-   	  <div id="log" > {{>messages}} </div>
+   <div id="primary">
+   	  <div id="log" >
+        <div style="text-align: center;">
+          <button
+            type="button"
+            id="viewList"
+            style="margin-top:10px; display:{{checkDisplayViewSidebarButton}};"
+            class="btn btn-default btn-xs"
+          >
+            {{viewOrHide}} Friends and Groups
+          </button>
+        </div>
+        {{>messages}}
+      </div>
       <div id="composer">{{>input}}</div>
 	 </div>
 <!--   {{lastMessage}}
@@ -89,12 +101,12 @@
     {{/if}}
   {{/each}}
   {{#if notOwnsGroup}}
-    <form class="createGroup" style="text-align: center; margin-bottom: 0px">
+    <form class="createGroup" style="width: 90%; text-align: center; margin-bottom: 0px">
       <div class="row">
-        <div class="col-xs-8">
+        <div class="col-xs-8" style="margin-left: 5px;">
           <input type="text" required class="form-control" id="newGroup" name="newGroup" placeholder="Create group..">
         </div>
-        <div class="col-xs-4">
+        <div class="col-xs-3">
           <button type="submit" id="addGroup" class="btn btn-default btn-xs"> Create </button>
         </div>
       </div>

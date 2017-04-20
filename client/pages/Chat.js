@@ -4,6 +4,7 @@ Session.set("group", false);
 Session.set("groupId", "");
 Session.set("lastMessageId", "");
 Session.set("lastMessageFromChatType", "");
+Session.set("viewList", false);
 
 Tracker.autorun(function(){
   const group = Groups.findOne({_id: Session.get("groupId")});
@@ -17,9 +18,11 @@ Tracker.autorun(function(){
 });
 
 function scrollDown() {
-  $("#log").css("max-height", (window.innerHeight - $("#composer").innerHeight() -
-      $("#nav").innerHeight() - $(".navbar").innerHeight() - 25)+"px");
-  $("#inputMessageBox").css("max-width", $("#log").innerWidth());
+  if (window.innerWidth > 768) {
+    $("#log").css("max-height", (window.innerHeight - $("#composer").innerHeight() -
+        $("#nav").innerHeight() - $(".navbar").innerHeight() - 25)+"px");
+    $("#inputMessageBox").css("max-width", $("#log").innerWidth());
+  }
 
   let elem = document.getElementById('log');
 
@@ -28,8 +31,21 @@ function scrollDown() {
   }
 }
 
+function hideSidebar() {
+  if (window.innerWidth < 768) {
+    Session.set("viewList", false);
+    document.getElementById("sidebar").style.display = "none";
+  }
+}
+
 Template.chat.rendered = function(){
+  // for mobile, only once
+  $("#log").css("max-height", (window.innerHeight - $("#composer").innerHeight() -
+      $("#nav").innerHeight() - $(".navbar").innerHeight() - 25)+"px");
+  $("#inputMessageBox").css("max-width", $("#log").innerWidth());
+
   scrollDown();
+
   Session.set("messageReciever", []);
   Session.set("global", true);
   Session.set("groupId", "");
@@ -144,12 +160,34 @@ Template.chat.helpers({
   notloggedIn: function(){
     return !Meteor.user();
   },
-  displayType: function(){
-    if (Meteor.user()){
-      return "show";
+  checkDisplaySidebar: function() {
+    if (window.innerWidth >= 768) {
+      return 'inherit';
+    }
+    return 'none';
+  },
+  checkDisplayViewSidebarButton: function() {
+    if (window.innerWidth >= 768) {
+      return 'none';
+    }
+    return 'inline-block';
+  },
+  viewOrHide: function() {
+    if (Session.get("viewList")) {
+      return "Hide";
+    }
+    return "View"
+  }
+})
+
+Template.chat.events({
+  'click #viewList': function() {
+    Session.set("viewList", !Session.get("viewList"));
+    if (Session.get("viewList")) {
+      document.getElementById("sidebar").style.display = "inherit";
     }
     else {
-      return "hidden";
+      document.getElementById("sidebar").style.display = "none";
     }
   }
 })
@@ -248,6 +286,7 @@ Template.onlineUsers.events({
       }
     }
 
+    hideSidebar();
     setTimeout(scrollDown, 100);
   },
   'click #startGChat': function(e){
@@ -262,6 +301,8 @@ Template.onlineUsers.events({
     if (type[0] === 'global') {
       Meta.setTitle("");
     }
+
+    hideSidebar();
     setTimeout(scrollDown, 100);
   },
   'click #addGroup': function(e){
@@ -332,20 +373,7 @@ Template.offlineUsers.events({
       }
     }
 
-    setTimeout(scrollDown, 100);
-  },
-  'click #startGChat': function(e){
-    e.preventDefault();
-    Session.set("messageReciever", []);
-    Session.set("global", true);
-    Session.set("groupId", "");
-    Session.set("group", false);
-
-    let type = Session.get("lastMessageFromChatType").split('#');
-
-    if (type[0] === 'global') {
-      Meta.setTitle("");
-    }
+    hideSidebar();
     setTimeout(scrollDown, 100);
   },
   'click #addGroup': function(e){
@@ -432,6 +460,7 @@ Template.groups.events({
           toastr.error("Internal Server Error!", "ERROR");
         }
       } else {
+        hideSidebar();
         toastr.info("Grupul " + name + " a fost sters.", "SUCCESS");
       }
     })
@@ -450,6 +479,8 @@ Template.groups.events({
         Meta.setTitle("");
       }
     }
+
+    hideSidebar();
     setTimeout(scrollDown, 100);
   },
   'click #leaveGroupChat': function(e){

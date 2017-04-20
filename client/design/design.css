@@ -26,16 +26,16 @@ h1.intro{
     overflow: auto;
 }
 #usersDisplay{
-    overflow-y: scroll;
-    max-height: 50px;
+    overflow-y: auto;
+    max-height: 90px;
     padding-top: 8px;
     border-style: solid;
     background-color: #707070;
     border-color: #505050;
 }
 #groupsDisplay{
-    overflow-y: scroll;
-    max-height: 50px;
+    overflow-y: auto;
+    max-height: 90px;
     padding-top: 8px;
     border-style: solid;
     background-color: #707070;
@@ -83,7 +83,7 @@ h1.intro{
         overflow: auto;
     }
     #usersDisplay{
-        overflow-y: scroll;
+        overflow-y: auto;
         max-height: 90px;
         padding-top: 8px;
         border-style: solid;
@@ -91,7 +91,7 @@ h1.intro{
         border-color: #505050;
     }
     #groupsDisplay{
-        overflow-y: scroll;
+        overflow-y: auto;
         max-height: 90px;
         padding-top: 8px;
         border-style: solid;
