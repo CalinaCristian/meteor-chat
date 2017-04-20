@@ -20,6 +20,19 @@ h1.intro{
     text-align: center;
     font-size: 20px;
 }
+#divLoading {
+  display : block;
+  position : fixed;
+  z-index: 100;
+  background-image : url('loading.gif');
+  background-size: 200px 150px;
+  background-repeat : no-repeat;
+  background-position : center;
+  left : 0;
+  bottom : 0;
+  right : 0;
+  top : 0;
+}
 #sidebar{
     width: 100%;
     background-color: gray;
