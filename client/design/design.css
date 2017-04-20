@@ -25,6 +25,14 @@ h1.intro{
     background-color: gray;
     overflow: auto;
 }
+#usersDisplay{
+    overflow: auto;
+    max-height: 50px;
+}
+#groupsDisplay{
+    overflow: auto;
+    max-height: 50px;
+}
 #primary{
      height: auto;
 }
@@ -65,6 +73,14 @@ h1.intro{
         float: left;
         background-color: gray;
         overflow: auto;
+    }
+    #usersDisplay{
+        overflow: auto;
+        max-height: 200px;
+    }
+    #groupsDisplay{
+        overflow: auto;
+        max-height: 200px;
     }
     #primary {
         margin-left: 200px;

@@ -202,8 +202,8 @@ Template.msj.helpers({
   }
 })
 
-Template.users.helpers({
-	users: function(){
+Template.onlineUsers.helpers({
+	onlineUsers: function(){
 		return Meteor.users.find({"status.online": true});
 	},
   userIsFriend: function(){
@@ -232,7 +232,91 @@ Template.users.helpers({
   }
 })
 
-Template.users.events({
+Template.onlineUsers.events({
+  'click #startChat': function(e){
+    e.preventDefault();
+    Session.set("global",false);
+    Session.set("group", false);
+    Session.set("groupId", "");
+    Session.set("messageReciever", [this._id]);
+
+    let type = Session.get("lastMessageFromChatType").split('#');
+
+    if (type[0] === 'user') {
+      if (type[1] === this._id) {
+        Meta.setTitle("");
+      }
+    }
+
+    setTimeout(scrollDown, 100);
+  },
+  'click #startGChat': function(e){
+    e.preventDefault();
+    Session.set("messageReciever", []);
+    Session.set("global", true);
+    Session.set("groupId", "");
+    Session.set("group", false);
+
+    let type = Session.get("lastMessageFromChatType").split('#');
+
+    if (type[0] === 'global') {
+      Meta.setTitle("");
+    }
+    setTimeout(scrollDown, 100);
+  },
+  'click #addGroup': function(e){
+    e.preventDefault();
+
+    const name = this.username;
+
+    Meteor.call("addUserToMyGroup", this, function(err, result){
+      if (err){
+        if (err.reason){
+          toastr.error(err.reason, "ERROR");
+        }
+        else {
+          toastr.error("Internal Server Error!", "ERROR");
+        }
+      } else {
+        let receivers = Session.get("messageReciever");
+
+        receivers.push(result);
+        Session.set("messageReciever", receivers);
+        toastr.info("Utilizatorul " + name + " a fost adaugat in grupul " +
+          Groups.findOne({owner: Meteor.userId()}).name, "SUCCESS");
+      }
+    })
+  }
+})
+
+Template.offlineUsers.helpers({
+  offlineUsers: function(){
+    return Meteor.users.find({"status.online": false});
+  },
+  userIsFriend: function(){
+    const friends = Meteor.user().friends;
+
+    return (($.inArray(this._id, friends)>-1) && (this._id !== Meteor.userId()));
+  },
+  notInMyGroup: function(){
+    const group = Groups.findOne({owner: Meteor.userId()});
+
+    if (group){
+      return (group.users.indexOf(this._id) == -1);
+    }
+    else {
+      return false;
+    }
+  },
+  getUsername: function(){
+    if (this.username.length > 8) {
+      return this.username.substring(0, 8) + "..";
+    }
+    return this.username;
+  }
+})
+
+Template.offlineUsers.events({
   'click #startChat': function(e){
     e.preventDefault();
     Session.set("global",false);

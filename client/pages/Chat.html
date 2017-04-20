@@ -7,9 +7,17 @@
   {{/if}}
 	 <div id="sidebar" style="visibility:{{displayType}}">
 		  <p style="color:#660066; text-align: center;"> <strong>Online Friends:</strong> </p>
-		  {{> users}}
+      <div id="usersDisplay">
+  		  {{> onlineUsers}}
+      </div>
+      <p style="color:#660066; text-align: center;"> <strong>Offline Friends:</strong> </p>
+      <div id="usersDisplay">
+        {{> offlineUsers}}
+      </div>
       <p style="color:#660066; text-align: center;"> <strong>Your Groups:</strong> </p>
-      {{> groups}}
+      <div id="groupsDisplay">
+        {{> groups}}
+      </div>
    </div>
    <div id="primary" style="visibility:{{displayType}}">
    	  <div id="log" > {{>messages}} </div>
@@ -20,8 +28,8 @@
 
 </template>
 
-<template name="users">
-	{{#each users}}
+<template name="onlineUsers">
+	{{#each onlineUsers}}
     {{#if itsme}}
       <p>
       <span style="color:{{getColor this}}" class="glyphicon glyphicon-user"></span>
@@ -30,7 +38,7 @@
       </p>
     {{/if}}
   {{/each}}
-  {{#each users}}
+  {{#each onlineUsers}}
     {{#if userIsFriend}}
       <p>
       <span style="color:{{getColor this}}" class="glyphicon glyphicon-user"></span>
@@ -42,6 +50,21 @@
       </p>
     {{/if}}
 	{{/each}}
+</template>
+
+<template name="offlineUsers">
+  {{#each offlineUsers}}
+    {{#if userIsFriend}}
+      <p>
+      <span style="color:{{getColor this}}" class="glyphicon glyphicon-user"></span>
+      <strong style="color:{{getColor this}}" data-toogle="tooltip" title="{{username}}"> {{getUsername this}} </strong>
+      {{#if notInMyGroup}}
+      <button type="button" id="addGroup" class="btn btn-default btn-xs pull-right"> Group </button>
+      {{/if}}
+      <button type="button" id="startChat" class="btn btn-default btn-xs pull-right"> Chat </button>
+      </p>
+    {{/if}}
+  {{/each}}
 </template>
 
 <template name="groups">
