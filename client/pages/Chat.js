@@ -21,7 +21,7 @@ function scrollDown() {
       $("#nav").innerHeight() - $(".navbar").innerHeight() - 25)+"px");
   $("#inputMessageBox").css("max-width", $("#log").innerWidth());
 
-  var elem = document.getElementById('log');
+  let elem = document.getElementById('log');
 
   if (elem){
     elem.scrollTop = elem.scrollHeight;
@@ -39,13 +39,12 @@ Template.chat.rendered = function(){
 
   this.autorun(function(){
     if (Messages.findOne()) {
-
       const lastMessage = Messages.find({}, {sort: {time: -1}, limit: 1}).fetch()[0];
+
       if (Session.get("lastMessageId") !== lastMessage._id) {
         const prevId = Session.get("lastMessageId");
 
         Session.set("lastMessageId", lastMessage._id);
-
         if (Session.get("global") && lastMessage.reciever.length === 0) {
           scrollDown();
         }
@@ -163,11 +162,12 @@ Template.messages.helpers({
 
 Template.msj.helpers({
   filterThem: function(){
-    var other = Session.get("messageReciever");
-    var equal = true;
+    const other = Session.get("messageReciever");
+    let equal = true;
+
     //check if equal:
     if ((other.length == this.reciever.length) && (other.length > 0)) {
-      for (var i = 0 ; i < other.length ; i ++){
+      for (let i = 0 ; i < other.length ; i ++){
         if (other[i] !== this.reciever[i]){
           equal = false;
         }
@@ -207,7 +207,8 @@ Template.users.helpers({
 		return Meteor.users.find({"status.online": true});
 	},
   userIsFriend: function(){
-    var friends = Meteor.user().friends;
+    const friends = Meteor.user().friends;
+
     return (($.inArray(this._id, friends)>-1) && (this._id !== Meteor.userId()));
   },
   itsme: function(){
@@ -265,7 +266,9 @@ Template.users.events({
   },
   'click #addGroup': function(e){
     e.preventDefault();
-    var name = this.username;
+
+    const name = this.username;
+
     Meteor.call("addUserToMyGroup", this, function(err, result){
       if (err){
         if (err.reason){
@@ -276,10 +279,9 @@ Template.users.events({
         }
       } else {
         let receivers = Session.get("messageReciever");
+
         receivers.push(result);
-
         Session.set("messageReciever", receivers);
-
         toastr.info("Utilizatorul " + name + " a fost adaugat in grupul " +
           Groups.findOne({owner: Meteor.userId()}).name, "SUCCESS");
       }
@@ -292,7 +294,8 @@ Template.groups.helpers({
     return Groups.find();
   },
   'userInGroup': function(){
-    var usersInGroup = this.users;
+    const usersInGroup = this.users;
+
     return ($.inArray(Meteor.userId(), usersInGroup) > -1);
   },
   'ownerOfGroup': function(){
@@ -315,7 +318,9 @@ Template.groups.helpers({
 Template.groups.events({
   'submit .createGroup': function(e,t){
     e.preventDefault();
-    var name = t.find('#newGroup').value
+
+    const name = t.find('#newGroup').value
+
     Meteor.call("createGroup", name,function(err){
       if (err){
         if (err.reason){
@@ -331,8 +336,9 @@ Template.groups.events({
   },
   'click #deleteGroup': function(e){
     e.preventDefault();
-    var name = this.name;
-    var theId = this._id;
+
+    const name = this.name;
+
     Meteor.call("removeGroup",this, function(err){
       if (err){
         if (err.reason){
@@ -354,6 +360,7 @@ Template.groups.events({
     Session.set("groupId", this._id);
 
     let type = Session.get("lastMessageFromChatType").split('#');
+
     if (type[0] === 'group') {
       if (type[1] === this._id) {
         Meta.setTitle("");
@@ -394,7 +401,8 @@ Template.input.events ({
       	toastr.error("Nu sunteti autentificat.","ERROR!");
       	document.getElementById('message').value = '';
       }
-      var message = document.getElementById('message');
+
+      let message = document.getElementById('message');
 
       if (message.value != '') {
 
@@ -419,11 +427,13 @@ Template.input.events ({
 
 Template.input.helpers({
     'toWhom': function(){
+      let forUsers, forGroupsUsers;
+
       if (Session.get("group") == true){
-        var forGroupsUsers = Groups.findOne({_id: Session.get("groupId")});
+        forGroupsUsers = Groups.findOne({_id: Session.get("groupId")});
       }
       else {
-        var forUsers = Meteor.users.findOne({_id: Session.get("messageReciever")[0]});
+        forUsers = Meteor.users.findOne({_id: Session.get("messageReciever")[0]});
       }
 
       return forUsers ? forUsers.username :

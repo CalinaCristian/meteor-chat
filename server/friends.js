@@ -14,7 +14,7 @@ Meteor.methods({
 		    }
 		  })
 		}).then((res) => {
-			const usersWithId = Meteor.users.find({"services.facebook.id": {$in: res}}).fetch();
+			var usersWithId = Meteor.users.find({"services.facebook.id": {$in: res}}).fetch();
 
 			usersWithId.map((friend) => {
 				if ((user.friends.indexOf(friend._id) < 0) && (friend.friends.indexOf(user._id) < 0)) {

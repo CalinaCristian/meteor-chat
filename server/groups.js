@@ -25,6 +25,7 @@ Meteor.methods({
 		}
 		var group = Groups.findOne({owner: Meteor.userId()})
 		var usersArray = group.users;
+
 		usersArray.push(doc._id);
 
 		Groups.update({_id: group._id}, {
@@ -53,6 +54,7 @@ Meteor.methods({
 		}
 		var group = Groups.findOne({_id: id});
 		var usersArray = group.users;
+
 		usersArray.splice(usersArray.indexOf(Meteor.userId()), 1);
 
 		Groups.update({_id: id}, {

@@ -42,7 +42,7 @@ Template.login.events({
 	'submit .login-form' : function(e, t){
     e.preventDefault();
     // retrieve the input field values
-    var password = t.find('#login-password').value
+    const password = t.find('#login-password').value
       , usernameOrEmail = t.find('#login-usernameOrEmail').value
 
       // Trim and validate your fields here....
