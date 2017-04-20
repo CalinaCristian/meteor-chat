@@ -148,7 +148,11 @@ Template.chat.rendered = function(){
 
 Meteor.startup(function() {
   $(window).resize(function(evt){
-    scrollDown();
+    if (window.innerWidth > 768) {
+      $("#log").css("max-height", (window.innerHeight - $("#composer").innerHeight() -
+          $("#nav").innerHeight() - $(".navbar").innerHeight() - 25)+"px");
+      $("#inputMessageBox").css("max-width", $("#log").innerWidth());
+    }
   })
 });
 
