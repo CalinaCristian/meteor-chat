@@ -76,11 +76,11 @@ h1.intro{
     }
     #usersDisplay{
         overflow: auto;
-        max-height: 200px;
+        max-height: 90px;
     }
     #groupsDisplay{
         overflow: auto;
-        max-height: 200px;
+        max-height: 90px;
     }
     #primary {
         margin-left: 200px;
