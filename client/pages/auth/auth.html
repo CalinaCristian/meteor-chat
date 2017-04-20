@@ -12,9 +12,9 @@
 	{{#if loggingIn}}
 		<a> Logging in...</a>
 	{{else}}
-		<a class="login">
+		<a class="login" style="display: {{getDisplay}}">
 			<span style="color:{{getColor currentUser}}" class="glyphicon glyphicon-user"> </span>
-			<strong style="color:{{getColor currentUser}}" id="mycolor"> {{currentUser.username}} </strong>
+			<strong style="color:{{getColor currentUser}}" id="mycolor"> {{getUserName}} </strong>
 		</a>
 	{{/if}}
 </template>

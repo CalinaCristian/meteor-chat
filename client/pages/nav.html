@@ -26,14 +26,30 @@
         <ul class="nav navbar-nav" style="width: 100%">
           <li> <img class="h" src="Logo.png" alt="Logo" style="max-width:50px;height:auto;cursor:pointer;"> </li>
           {{#unless currentUser}}
-            <li style="padding-top: 4px; cursor:pointer;"> <a class="r"> Sign In/Up </a> </li>
+            <li class="pull-right" style="padding-top: 4px; cursor:pointer;">
+              <a class="r">
+                <i class="fa fa-sign-in fa-lg"></i>
+              </a>
+            </li>
           {{/unless}}
           <li style="padding-top: 4px; cursor:default;"> {{> auth}} </li>
 
           {{#if currentUser}}
-            <li class="pull-right" style="padding-top: 4px; cursor: pointer"> <a id="logout"> Logout </a> </li>
-            <li class="pull-right" style="padding-top: 4px; cursor: pointer"> <a class="c" id="chatID">Chat</a> </li>
-            <li class="pull-right" style="padding-top: 4px; cursor: pointer"> <a class="m">Members</a> </li>
+            <li class="pull-right" style="padding-top: 4px; cursor: pointer">
+              <a id="logout">
+                <i class="fa fa-sign-out fa-lg"></i>
+              </a>
+            </li>
+            <li class="pull-right" style="padding-top: 4px; cursor: pointer">
+              <a class="c" id="chatID">
+                <i class="fa fa-comments fa-lg"></i>
+              </a>
+            </li>
+            <li class="pull-right" style="padding-top: 4px; cursor: pointer">
+              <a class="m">
+                <i class="fa fa-users fa-lg"></i>
+              </a>
+            </li>
           {{/if}}
         </ul>
       </div>
