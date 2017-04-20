@@ -3,6 +3,7 @@ Session.set("global", false);
 Session.set("group", false);
 Session.set("groupId", "");
 Session.set("lastMessageId", "");
+Session.set("lastMessageFromChatType", "");
 
 Tracker.autorun(function(){
   const group = Groups.findOne({_id: Session.get("groupId")});
@@ -29,9 +30,14 @@ function scrollDown() {
 
 Template.chat.rendered = function(){
   scrollDown();
+  Session.set("messageReciever", []);
   Session.set("global", true);
+  Session.set("groupId", "");
+  Session.set("group", false);
+  Session.set("lastMessageId", "");
+  Session.set("lastMessageFromChatType", "");
 
-  Tracker.autorun(function(){
+  this.autorun(function(){
     if (Messages.findOne()) {
 
       const lastMessage = Messages.find({}, {sort: {time: -1}, limit: 1}).fetch()[0];
@@ -56,18 +62,62 @@ Template.chat.rendered = function(){
           if (lastMessage.reciever.length === 0) {
             const username = Meteor.users.findOne({_id: lastMessage.sender}).username;
 
-            toastr.info(`${username}: ${lastMessage.message}`, "From Global Chat");
+            Meta.setTitle(`"${username}" from Global Chat messaged`);
+            Session.set("lastMessageFromChatType", "global");
+
+            toastr.info(`${username}: ${lastMessage.message}`, "From Global Chat", {
+              onclick: () => {
+                Session.set("messageReciever", []);
+                Session.set("global", true);
+                Session.set("groupId", "");
+                Session.set("group", false);
+
+                Meta.setTitle("");
+                setTimeout(scrollDown, 100);
+              }
+            });
           }
           else if (lastMessage.group && lastMessage.groupId) {
             const name = Groups.findOne({_id: lastMessage.groupId}).name;
             const username = Meteor.users.findOne({_id: lastMessage.sender}).username;
 
-            toastr.info(`${username}: ${lastMessage.message}`, `From Group "${name}"`);
+            Meta.setTitle(`"${username}" from group "${name}" messaged`);
+            Session.set("lastMessageFromChatType", `group#${lastMessage.groupId}`);
+
+            toastr.info(`${username}: ${lastMessage.message}`, `From Group "${name}"`, {
+              onclick: () => {
+                let lastRecievers = lastMessage.reciever;
+
+                lastRecievers.splice(lastMessage.reciever.indexOf(Meteor.userId()), 1);
+                lastRecievers.push(lastMessage.sender);
+
+                Session.set("messageReciever", lastRecievers);
+                Session.set("global", false);
+                Session.set("group", true);
+                Session.set("groupId", lastMessage.groupId);
+
+                Meta.setTitle("");
+                setTimeout(scrollDown, 100);
+              }
+            });
           }
           else if (!lastMessage.group && !lastMessage.groupId && (lastMessage.reciever[0] === Meteor.userId())) {
             const username = Meteor.users.findOne({_id: lastMessage.sender}).username;
 
-            toastr.info(lastMessage.message, `From "${username}"`);
+            Meta.setTitle(`"${username}" messaged you`);
+            Session.set("lastMessageFromChatType", `user#${lastMessage.sender}`);
+
+            toastr.info(lastMessage.message, `From "${username}"`, {
+              onclick: () => {
+                Session.set("global",false);
+                Session.set("group", false);
+                Session.set("groupId", "");
+                Session.set("messageReciever", [lastMessage.sender]);
+
+                Meta.setTitle("");
+                setTimeout(scrollDown, 100);
+              }
+            });
           }
         }
       }
@@ -189,6 +239,14 @@ Template.users.events({
     Session.set("groupId", "");
     Session.set("messageReciever", [this._id]);
 
+    let type = Session.get("lastMessageFromChatType").split('#');
+
+    if (type[0] === 'user') {
+      if (type[1] === this._id) {
+        Meta.setTitle("");
+      }
+    }
+
     setTimeout(scrollDown, 100);
   },
   'click #startGChat': function(e){
@@ -198,6 +256,11 @@ Template.users.events({
     Session.set("groupId", "");
     Session.set("group", false);
 
+    let type = Session.get("lastMessageFromChatType").split('#');
+
+    if (type[0] === 'global') {
+      Meta.setTitle("");
+    }
     setTimeout(scrollDown, 100);
   },
   'click #addGroup': function(e){
@@ -290,6 +353,12 @@ Template.groups.events({
     Session.set("group", true);
     Session.set("groupId", this._id);
 
+    let type = Session.get("lastMessageFromChatType").split('#');
+    if (type[0] === 'group') {
+      if (type[1] === this._id) {
+        Meta.setTitle("");
+      }
+    }
     setTimeout(scrollDown, 100);
   },
   'click #leaveGroupChat': function(e){
