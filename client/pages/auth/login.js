@@ -6,6 +6,11 @@ Template.login.onCreated(function(){
 });
 
 Template.login.rendered = function(){
+  if (window.innerHeight < 768) {
+    toastr.options = {
+      "positionClass": "toast-bottom-center"
+    }
+  }
   $('#valid').validate({
     rules : {
       usernameOrEmail : {

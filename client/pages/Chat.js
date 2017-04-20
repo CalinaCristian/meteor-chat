@@ -39,6 +39,12 @@ function hideSidebar() {
 }
 
 Template.chat.rendered = function(){
+  if (window.innerHeight < 768) {
+    toastr.options = {
+      "positionClass": "toast-bottom-center"
+    }
+  }
+
   // for mobile, only once
   $("#log").css("max-height", (window.innerHeight - $("#composer").innerHeight() -
       $("#nav").innerHeight() - $(".navbar").innerHeight() - 25)+"px");
@@ -142,6 +148,10 @@ Template.chat.rendered = function(){
 
 Meteor.startup(function() {
   $(window).resize(function(evt){
+    $("#log").css("max-height", (window.innerHeight - $("#composer").innerHeight() -
+      $("#nav").innerHeight() - $(".navbar").innerHeight() - 25)+"px");
+    $("#inputMessageBox").css("max-width", $("#log").innerWidth());
+
     scrollDown();
   })
 });
