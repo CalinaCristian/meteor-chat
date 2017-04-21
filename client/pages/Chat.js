@@ -5,6 +5,8 @@ Session.set("groupId", "");
 Session.set("lastMessageId", "");
 Session.set("lastMessageFromChatType", "");
 Session.set("viewList", false);
+Session.set("alreadySet", false);
+Session.set("portrait", true);
 
 Tracker.autorun(function(){
   const group = Groups.findOne({_id: Session.get("groupId")});
@@ -18,7 +20,7 @@ Tracker.autorun(function(){
 });
 
 function scrollDown() {
-  if (window.innerWidth > 768) {
+  if (window.innerWidth >= 768) {
     $("#log").css("max-height", (window.innerHeight - $("#composer").innerHeight() -
         $("#nav").innerHeight() - $(".navbar").innerHeight() - 25)+"px");
     $("#inputMessageBox").css("max-width", $("#log").innerWidth());
@@ -43,6 +45,13 @@ Template.chat.rendered = function(){
     toastr.options = {
       "positionClass": "toast-bottom-center"
     }
+  }
+
+  if (window.innerHeight > window.innerWidth) {
+    Session.set("portrait", true);
+  }
+  else {
+    Session.set("portrait", false);
   }
 
   // for mobile, only once
@@ -148,10 +157,36 @@ Template.chat.rendered = function(){
 
 Meteor.startup(function() {
   $(window).resize(function(evt){
-    if (window.innerWidth > 768) {
+    if ((window.innerHeight > window.innerWidth) && (!Session.get("portrait"))) {
       $("#log").css("max-height", (window.innerHeight - $("#composer").innerHeight() -
           $("#nav").innerHeight() - $(".navbar").innerHeight() - 25)+"px");
       $("#inputMessageBox").css("max-width", $("#log").innerWidth());
+
+      Session.set("portrait", true);
+    }
+    else if ((window.innerWidth > window.innerHeight) && (Session.get("portrait"))){
+      $("#log").css("max-height", (window.innerHeight - $("#composer").innerHeight() -
+          $("#nav").innerHeight() - $(".navbar").innerHeight() - 25)+"px");
+      $("#inputMessageBox").css("max-width", $("#log").innerWidth());
+
+      Session.set("portrait", false);
+    }
+
+    if ((window.innerWidth < 768) && (!Session.get("alreadySet"))) {
+      Session.set("alreadySet", true);
+      Session.set("viewList", false);
+      document.getElementById("sidebar").style.display = "none";
+      document.getElementById("viewList").style.display = "inherit";
+    }
+    else if (window.innerWidth >= 768) {
+      $("#log").css("max-height", (window.innerHeight - $("#composer").innerHeight() -
+          $("#nav").innerHeight() - $(".navbar").innerHeight() - 25)+"px");
+      $("#inputMessageBox").css("max-width", $("#log").innerWidth());
+
+      Session.set("viewList", true);
+      Session.set("alreadySet", false);
+      document.getElementById("sidebar").style.display = "inherit";
+      document.getElementById("viewList").style.display = "none";
     }
   })
 });
