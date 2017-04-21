@@ -6,7 +6,7 @@ Template.register.onCreated(function(){
 });
 
 Template.register.rendered = function(){
-  if (window.innerHeight < 768) {
+  if (window.innerWidth < 768) {
     toastr.options = {
       "positionClass": "toast-bottom-center"
     }
