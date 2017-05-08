@@ -1,3 +1,6 @@
+import swal from 'sweetalert';
+import saveAs from 'file-saverjs';
+
 Session.set("messageReciever", []);
 Session.set("global", false);
 Session.set("group", false);
@@ -282,6 +285,59 @@ Template.msj.helpers({
   },
   systemMessage: function(){
     return (this.name==="System");
+  },
+  hasAttachements: function(){
+    return (this.files && this.files.length > 0) || false;
+  }
+})
+
+function b64toBlob(b64Data, contentType, sliceSize, fileName) {
+  contentType = contentType || '';
+  sliceSize = sliceSize || 512;
+
+  let byteCharacters = atob(b64Data);
+  let byteArrays = [];
+
+  for (let offset = 0; offset < byteCharacters.length; offset += sliceSize) {
+    let slice = byteCharacters.slice(offset, offset + sliceSize);
+
+    let byteNumbers = new Array(slice.length);
+    for (let i = 0; i < slice.length; i++) {
+      byteNumbers[i] = slice.charCodeAt(i);
+    }
+
+    let byteArray = new Uint8Array(byteNumbers);
+
+    byteArrays.push(byteArray);
+  }
+
+  let blob = new Blob(byteArrays, {
+    type: contentType
+  });
+  if (blob) {
+    saveAs(blob, fileName);
+  } else {
+    throw 'Could not generate blob';
+  }
+}
+
+Template.msj.events({
+  'click #downloadButton': function() {
+    this.files.forEach((file) => {
+      Meteor.call('readFile', file.url, (err,res) => {
+        if (err){
+          if (err.reason){
+            toastr.error(`Error while downloading file ${file.name}. Perhaps it has expired`, "ERROR");
+          }
+          else {
+            toastr.error("Internal Server Error!", "ERROR");
+          }
+        } else {
+          b64toBlob(res, file.type, null, file.name);
+          toastr.success(`The file: ${file.name} has been downloaded`, "SUCCESS");
+        }
+      });
+    })
   }
 })
 
@@ -582,6 +638,68 @@ Template.input.events ({
       document.getElementById('message').value = '';
       message.value = '';
       }
+    },
+    'click #uploadButton': function() {
+      $("#triggerUpload").trigger('click');
+    },
+    'change #triggerUpload': function(ev) {
+      const list = $("#triggerUpload").prop('files');
+      const keys = Object.keys(list);
+      let sizeTooBig = false;
+      const filesList = keys.map((key) => {
+        if (list[key].size > 10000000) {
+          sizeTooBig = true;
+        }
+        return list[key];
+      });
+
+      if (sizeTooBig) {
+        toastr.error("File exceeds maximum allowed size of 10MB", "ERROR");
+        swal.close();
+        return;
+      }
+
+      swal({
+        title: "Send?",
+        text: `Are you sure you want to send ${filesList.length} ${filesList.length == 1 ? 'file' : 'files'} ?`,
+        type: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#DD6B55",
+        confirmButtonText: "Yes",
+        cancelButtonText: "Cancel",
+        closeOnConfirm: false,
+        closeOnCancel: true,
+        showLoaderOnConfirm: true,
+      },
+      function(isConfirm){
+        if (isConfirm) {
+          // filesList.forEach((file) => {
+          Meteor.saveFile(filesList, Session.get("messageReciever"), Session.get("group"),
+            (Session.get("group")==true) ? Session.get("groupId") : "", (err, res) => {
+
+            swal.close();
+
+            if (err){
+              if (err.reason){
+                toastr.error(err.reason, "ERROR");
+              }
+              else {
+                toastr.error("Internal Server Error!", "ERROR");
+              }
+              $('#triggerUpload').val('');
+            }
+            else {
+              toastr.success("The upload was successfull", "SUCCESS");
+              $('#triggerUpload').val('');
+            }
+          });
+          // })
+        } else {
+          swal.close();
+
+          $('#triggerUpload').val('');
+        }
+      });
     }
 });
 

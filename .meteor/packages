@@ -39,3 +39,5 @@ service-configuration
 fortawesome:fontawesome
 stevezhu:fbgraph
 yasinuslu:blaze-meta
+percolate:synced-cron
+ecmascript

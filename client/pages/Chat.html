@@ -122,10 +122,14 @@
 
 <template name="input">
   <div id="inputMessageBox" class="row">
-    <div class="col-xs-5 col-sm-4 col-md-3 col-lg-3">
+    <div class="col-xs-7 col-sm-4 col-md-3 col-lg-3">
       Message <strong style="color:blue">({{toWhom}})</strong>:
+      <button type="button" id="uploadButton" class="btn btn-primary btn-xs">
+        <i class="fa fa-upload"></i>
+      </button>
+      <input style="width: 0px; height: 0px; overflow: hidden;" id="triggerUpload" type="file" multiple>
     </div>
-    <div class="col-xs-7 col-sm-8 col-md-9 col-lg-9">
+    <div class="col-xs-5 col-sm-8 col-md-9 col-lg-9">
       <input style="width:99%;" type="text" id="message">
     </div>
   </div>
@@ -143,7 +147,13 @@
       <span style="font-size:xx-small"> {{formatDate time "DD.MM.YY"}} </span>
       <span style="font-size:x-small"> <strong>{{formatDate time "HH:mm"}} </strong>  </span>
       <span style="color:{{myColorChat this}}" class="glyphicon glyphicon-user"> </span>
-      <strong style="color:{{myColorChat this}}"> {{name}}:</strong> {{message}} <br></span>
+      <strong style="color:{{myColorChat this}}"> {{name}}:</strong> {{message}}
+      {{#if hasAttachements}}
+        <button type="button" id="downloadButton" class="btn btn-primary btn-xs">
+          <i class="fa fa-download"></i>
+        </button>
+      {{/if}}
+      <br></span>
     {{/if}}
   {{/if}}
 </template>

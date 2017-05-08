@@ -1,4 +1,41 @@
+import {join} from 'path';
+import {exec} from 'child_process';
+
 Meteor.startup( function(){
+
+  function daysInThisMonth() {
+    var now = new Date();
+
+    return new Date(now.getFullYear(), now.getMonth()+1, 0).getDate();
+  }
+
+  const rootPath = process.env.PWD;
+  const filesPath = join(rootPath, 'private/uploads/');
+
+  SyncedCron.add({
+    name: 'Clean expired files on the server',
+    schedule: function(parser) {
+      // parser is a later.parse object
+      return parser.text('on the first day of the month');
+    },
+    job: function() {
+      const monthInMinutes = daysInThisMonth() * 24 * 60;
+
+      exec(`find ${filesPath} -mindepth 1 -mmin +${monthInMinutes} -delete -print`, (error, stdout, stderr) => {
+        if (error) {
+          console.error(`exec error: ${error}`);
+          return error;
+        }
+        else {
+          console.log("Success deleting old files");
+        }
+
+        return stdout;
+      });
+    }
+  });
+
+  SyncedCron.start();
 
   Meteor.publish("users", function() {
     return Meteor.users.find();
