@@ -44,7 +44,7 @@
 	{{#each onlineUsers}}
     {{#if itsme}}
       <p>
-      <span style="color:{{getColor this}}" class="glyphicon glyphicon-user"></span>
+      <span style="color:{{getColor this}}" class="fa fa-user"></span>
       <strong style="color:{{getColor this}}"> Me </strong>
       <button type="button" id="startGChat" class="btn btn-default pull-right btn-xs"> Global Chat </button>
       </p>
@@ -53,7 +53,7 @@
   {{#each onlineUsers}}
     {{#if userIsFriend}}
       <p>
-      <span style="color:{{getColor this}}" class="glyphicon glyphicon-user"></span>
+      <span style="color:{{getColor this}}" class="fa fa-user"></span>
       <strong style="color:{{getColor this}}" data-toogle="tooltip" title="{{username}}"> {{getUsername this}} </strong>
       {{#if notInMyGroup}}
       <button type="button" id="addGroup" class="btn btn-default btn-xs pull-right"> Group </button>
@@ -68,7 +68,7 @@
   {{#each offlineUsers}}
     {{#if userIsFriend}}
       <p>
-      <span style="color:{{getColor this}}" class="glyphicon glyphicon-user"></span>
+      <span style="color:{{getColor this}}" class="fa fa-user"></span>
       <strong style="color:{{getColor this}}" data-toogle="tooltip" title="{{username}}"> {{getUsername this}} </strong>
       {{#if notInMyGroup}}
       <button type="button" id="addGroup" class="btn btn-default btn-xs pull-right"> Group </button>
@@ -83,7 +83,7 @@
   {{#each group}}
     {{#if ownerOfGroup}}
       <p>
-      <span style="color:red" class="glyphicon glyphicon-subtitles"></span>
+      <span style="color:red" class="fa fa-subtitles"></span>
       <strong style="color:red" data-toogle="tooltip" title="{{realName}}"> {{name}} </strong>
       <button type="button" id="deleteGroup" class="btn btn-danger btn-xs pull-right"> Delete </button>
       <button type="button" id="startGroupChat" class="btn btn-default btn-xs pull-right"> Chat </button>
@@ -93,7 +93,7 @@
   {{#each group}}
     {{#if userInGroup}}
       <p>
-      <span style="color:black" class="glyphicon glyphicon-subtitles"></span>
+      <span style="color:black" class="fa fa-subtitles"></span>
       <strong data-toogle="tooltip" title="{{realName}}"> {{name}} </strong>
       <button type="button" id="leaveGroupChat" class="btn btn-danger btn-xs pull-right"> Leave </button>
       <button type="button" id="startGroupChat" class="btn btn-default btn-xs pull-right"> Chat </button>
@@ -146,7 +146,7 @@
       <span class="text">
       <span style="font-size:xx-small"> {{formatDate time "DD.MM.YY"}} </span>
       <span style="font-size:x-small"> <strong>{{formatDate time "HH:mm"}} </strong>  </span>
-      <span style="color:{{myColorChat this}}" class="glyphicon glyphicon-user"> </span>
+      <span style="color:{{myColorChat this}}" class="fa fa-user"> </span>
       <strong style="color:{{myColorChat this}}"> {{name}}:</strong> {{message}}
       {{#if hasAttachements}}
         <button type="button" id="downloadButton" class="btn btn-primary btn-xs">

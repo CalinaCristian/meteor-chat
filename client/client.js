@@ -1,5 +1,8 @@
 Meteor.startup( function(){
   import 'sweetalert/dist/sweetalert.css';
+  import 'bootstrap';
+  import 'bootstrap/dist/css/bootstrap.css';
+  import 'bootstrap/dist/css/bootstrap-theme.css';
 });
 
 Meteor.saveFile = function(blobs, reciever, group, groupId, callback) {
